@@ -6,7 +6,7 @@ import uuid
 from api.schemas.conversation import ConversationCreateRequest, ConversationResponse, ConversationUpdateRequest, PrdResponse
 from api.schemas.user import UserInDB
 from api.services.auth_service import get_current_user
-from api.services.conversation_service import create_conversation_service, get_conversations_service, get_session_conversations_service, update_conversation_service
+from api.services.conversation_service import create_conversation_service, get_conversations_service, get_session_conversations_service, update_conversation_service, get_prd_service
 from api.config import logger
 
 router = APIRouter(prefix="/conversations", tags=["对话管理"])
@@ -80,3 +80,23 @@ async def update_conversation(request: ConversationUpdateRequest, current_user: 
     except Exception as e:
         logger.error(f"Error updating conversation: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+
+
+@router.get("/get_prd", response_model=PrdResponse, summary="获取最新PRD内容")
+async def get_latest_prd(user_id: int) -> PrdResponse:
+    """
+    获取当前用户最新会话的PRD内容
+    
+    Args:
+        current_user (UserInDB): 当前登录用户信息，通过token认证获取
+        
+    Returns:
+        PrdResponse: 包含PRD内容的响应对象
+        
+    Raises:
+        HTTPException: 
+            - 404: 未找到用户会话或PRD内容
+            - 500: 服务器内部错误
+    """
+    return await get_prd_service(user_id)
