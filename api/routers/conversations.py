@@ -86,7 +86,7 @@ async def update_conversation(request: ConversationUpdateRequest, current_user: 
 @router.get("/get_prd", response_model=PrdResponse, summary="获取最新PRD内容")
 async def get_latest_prd(user_id: int) -> PrdResponse:
     """
-    获取当前用户最新会话的PRD内容
+    获取当前用户最新会话的PRD内容（该接口将从dify迁移后删除，仅在内部调用）
     
     Args:
         current_user (UserInDB): 当前登录用户信息，通过token认证获取
