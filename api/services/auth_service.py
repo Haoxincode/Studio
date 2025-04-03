@@ -4,9 +4,9 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
 
-from api.schemas.user import User, UserInDB
+from api.schemas.user import UserInDB
 from api.schemas.auth import TokenData, UserRegisterRequest
-from api.utils.security import verify_password, get_password_hash, create_access_token
+from api.utils.security import verify_password, get_password_hash
 from api.utils.db import get_db_connection
 from api.config import JWT_SECRET_KEY, JWT_ALGORITHM
 from api.utils.logger import get_logger
@@ -103,6 +103,16 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
     return user  # 返回当前用户信息
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+    return encoded_jwt
 
 # 用户注册服务
 async def register_user_service(user: UserRegisterRequest):
